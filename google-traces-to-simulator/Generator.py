@@ -34,7 +34,7 @@ class Job:
 # In this script, we will iterate over google traces job events and capture relevant information to create
 # google simulator log format
 
-machine_ram = int(4)
+machine_ram = int(8)
 prefill_dict = {}
 last_interarrival_timestamp = None  # we assume interarrival as time between submit events
 
@@ -134,11 +134,11 @@ all_state_file = open('/Users/dfernandez/simulacion_python/example-all-cluster-s
 sizes_file = open('/Users/dfernandez/simulacion_python/example_csizes_cmb.log', 'wb')
 interarrivals_file = open('/Users/dfernandez/simulacion_python/example_interarrival_cmb.log', 'wb')
 runtimes_file = open('/Users/dfernandez/simulacion_python/example_runtimes_cmb.log', 'wb')
-prefill_writer = csv.writer(init_state_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE)
-all_writer = csv.writer(all_state_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE)
-sizes_writer = csv.writer(sizes_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE)
-interarrivals_writer = csv.writer(interarrivals_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE)
-runtimes_writer = csv.writer(runtimes_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE)
+prefill_writer = csv.writer(init_state_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE)
+all_writer = csv.writer(all_state_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE)
+sizes_writer = csv.writer(sizes_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE)
+interarrivals_writer = csv.writer(interarrivals_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE)
+runtimes_writer = csv.writer(runtimes_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE)
 
 cluster_name = 'example_cluster'
 assignment_policy = 'cmb-new'
