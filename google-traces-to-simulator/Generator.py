@@ -147,27 +147,28 @@ ordered_jobs = collections.OrderedDict(sorted(prefill_dict.items()))
 
 for key, print_job in ordered_jobs.items():
 
-    # we generate an intermediate file to debug results
-    debug_row = list()
-    debug_row.append(print_job.job_id)
-    debug_row.append(print_job.scheduling_class)
-    debug_row.append(print_job.submit_timestamp)
-    debug_row.append(print_job.schedule_timestamp)
-    debug_row.append(print_job.finish_timestamp)
-    debug_row.append(print_job.aggregated_cpu)
-    debug_row.append(print_job.aggregated_memory)
-    debug_row.append(print_job.interarrival_time)
-    debug_row.append(print_job.task_number)
-    if print_job.schedule_timestamp is not None and print_job.finish_timestamp is not None:
-        debug_row.append(print_job.finish_timestamp - print_job.schedule_timestamp)
-    else:
-        debug_row.append('')
-    debug_writer.writerow(debug_row)
+    # # we generate an intermediate file to debug results
+    # debug_row = list()
+    # debug_row.append(print_job.job_id)
+    # debug_row.append(print_job.scheduling_class)
+    # debug_row.append(print_job.submit_timestamp)
+    # debug_row.append(print_job.schedule_timestamp)
+    # debug_row.append(print_job.finish_timestamp)
+    # debug_row.append(print_job.aggregated_cpu)
+    # debug_row.append(print_job.aggregated_memory)
+    # debug_row.append(print_job.interarrival_time)
+    # debug_row.append(print_job.task_number)
+    # if print_job.schedule_timestamp is not None and print_job.finish_timestamp is not None:
+    #     debug_row.append(print_job.finish_timestamp - print_job.schedule_timestamp)
+    # else:
+    #     debug_row.append('')
+    # debug_writer.writerow(debug_row)
 
     job_row = list()
     sizes_row = list()
     interarrivals_row = list()
     runtimes_row = list()
+    finish_job_row = list()
 
     # init cluster state
     if print_job.job_id is not None and print_job.scheduling_class is not None \
@@ -175,25 +176,33 @@ for key, print_job in ordered_jobs.items():
             and print_job.aggregated_cpu > float(0) \
             and print_job.aggregated_memory > float(0):
         time_window = 11
-        if print_job.finish_timestamp is not None and print_job.finish_timestamp > float(0):
-            time_window = 12
         job_row.append(time_window)
-        if print_job.finish_timestamp is None:
+        if print_job.schedule_timestamp is None:
             job_row.append(float(0))
         else:
-            job_row.append(print_job.finish_timestamp)
+            job_row.append(print_job.schedule_timestamp)
         job_row.append(print_job.job_id)
         job_row.append(int(print_job.scheduling_class > 0))
         job_row.append(print_job.scheduling_class)
         job_row.append(print_job.task_number)
         job_row.append(print_job.aggregated_cpu)  # num cores
         job_row.append(print_job.aggregated_memory * 1024 * 1024 * 1024 * machine_ram)
-        # conversion to byte and multiply by RAM
-        # we assume that machines have 1gb ram, we should multiply by some reasonable value (4-8gb)
-        # because google does not show the RAM of their machines
         all_writer.writerow(job_row)
         if not print_job.submit_timestamp > float(0):
             prefill_writer.writerow(job_row)
+        if print_job.finish_timestamp is not None and print_job.finish_timestamp > float(0):
+            finish_job_row.append(12)
+            finish_job_row.append(print_job.finish_timestamp)
+            finish_job_row.append(print_job.job_id)
+            finish_job_row.append(int(print_job.scheduling_class > 0))
+            finish_job_row.append(print_job.scheduling_class)
+            finish_job_row.append(print_job.task_number)
+            all_writer.writerow(finish_job_row)
+            if not print_job.submit_timestamp > float(0):
+                prefill_writer.writerow(finish_job_row)
+        # conversion to byte and multiply by RAM
+        # we assume that machines have 1gb ram, we should multiply by some reasonable value (4-8gb)
+        # because google does not show the RAM of their machines
 
     # job distribution traces
 
