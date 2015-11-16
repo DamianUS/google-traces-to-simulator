@@ -17,6 +17,6 @@ as described in https://drive.google.com/file/d/0B5g07T_gRDg9Z0lsSTEtTWtpOW8/vie
   
   * **Output 4**: **csizes_cmb** as described in https://github.com/google/cluster-scheduler-simulator/tree/master/traces/job-distribution-traces
   
-  * **Output 5**: **runtimes_cmb** as described in https://github.com/google/cluster-scheduler-simulator/tree/master/traces/job-distribution-traces
+  * **Output 5**: **interarrival_cmb** as described in https://github.com/google/cluster-scheduler-simulator/tree/master/traces/job-distribution-traces
   
   * **Output 6**: **runtimes_cmb** as described in https://github.com/google/cluster-scheduler-simulator/tree/master/traces/job-distribution-traces
