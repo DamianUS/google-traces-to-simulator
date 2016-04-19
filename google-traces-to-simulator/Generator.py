@@ -34,12 +34,12 @@ class Job:
 # In this script, we will iterate over google traces job events and capture relevant information to create
 # google simulator log format
 
-#machine_ram = int(1) #nosense
-#machine_cores = int(1) #nosense
+machine_ram = int(16)
+machine_cores = int(4)
 prefill_dict = {}
 last_interarrival_timestamp = None  # we assume interarrival as time between submit events
-#machine_ram_dict = {}
-#machine_cpu_dict = {}
+machine_ram_dict = {}
+machine_cpu_dict = {}
 
 # machines csv file columns constants
 
@@ -94,9 +94,11 @@ task_requested_memory_column = 4
 #     for row in machines_reader:
 #         evt = int(row[machine_event_type_column])
 #         # only add to dictionaries if is add event 0
-#         if evt == 0 and row[machine_id_column].strip() != "":
-#             machine_ram_dict[long(row[machine_id_column])] = float(row[machine_ram_column])
-#             machine_cpu_dict[long(row[machine_id_column])] = float(row[machine_cpu_column])
+#         if evt == 0 and row[machine_id_column].strip():
+#             if row[machine_ram_column].strip():
+#                 machine_ram_dict[long(row[machine_id_column])] = float(row[machine_ram_column])
+#             if row[machine_cpu_column].strip():
+#                 machine_cpu_dict[long(row[machine_id_column])] = float(row[machine_cpu_column])
 
 
 with open(job_events_file_path, 'rb') as csvfile:
@@ -152,12 +154,13 @@ with open(task_events_file_path, 'rb') as taskscsvfile:
             requested_memory = float(task_row[task_requested_memory_column])
 
         if event_type == 0:
-            # if machine_id in machine_cpu_dict:
-            #     requested_cpu = requested_cpu * machine_cpu_dict[machine_id]
-            # if machine_id in machine_ram_dict:
-            #     requested_memory = requested_memory * machine_ram_dict[machine_id]
-            prefill_dict[job_id].aggregated_cpu += requested_cpu
-            prefill_dict[job_id].aggregated_memory += requested_memory
+            # if machine_id is not None:
+            #     if machine_id in machine_cpu_dict:
+            #         requested_cpu = requested_cpu * machine_cpu_dict[machine_id]
+            #     if machine_id in machine_ram_dict:
+            #         requested_memory = requested_memory * machine_ram_dict[machine_id]
+            prefill_dict[job_id].aggregated_cpu += requested_cpu * machine_cores
+            prefill_dict[job_id].aggregated_memory += requested_memory * machine_ram
             prefill_dict[job_id].task_number += 1
 
 
