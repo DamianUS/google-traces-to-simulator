@@ -34,9 +34,21 @@ class Job:
 # In this script, we will iterate over google traces job events and capture relevant information to create
 # google simulator log format
 
-machine_ram = int(8)
+#machine_ram = int(1) #nosense
+#machine_cores = int(1) #nosense
 prefill_dict = {}
 last_interarrival_timestamp = None  # we assume interarrival as time between submit events
+#machine_ram_dict = {}
+#machine_cpu_dict = {}
+
+# machines csv file columns constants
+
+machine_events_file_path = '/Users/dfernandez/google/clusterdata-2011-2/machine_events/machines.csv'
+
+machine_id_column = 1
+machine_event_type_column = 2
+machine_cpu_column = 4
+machine_ram_column = 5
 
 # job csv file columns constants
 
@@ -52,6 +64,7 @@ job_scheduling_class = 5
 task_events_file_path = '/Users/dfernandez/google/clusterdata-2011-2/task_events/task_events.csv'
 
 task_job_id_column = 2
+task_machine_id_column = 4
 task_event_type_column = 5
 task_requested_cpu_column = 9
 task_requested_memory_column = 10
@@ -70,9 +83,21 @@ job_scheduling_class = 3
 task_events_file_path = '/Users/dfernandez/google/clusterdata-2011-2/task_events/task_events_simplificado.csv'
 
 task_job_id_column = 0
-task_event_type_column = 1
-task_requested_cpu_column = 2
-task_requested_memory_column = 3
+task_machine_id_column = 1
+task_event_type_column = 2
+task_requested_cpu_column = 3
+task_requested_memory_column = 4
+
+
+# with open(machine_events_file_path, 'rb') as machinecsvfile:
+#     machines_reader = csv.reader(machinecsvfile)
+#     for row in machines_reader:
+#         evt = int(row[machine_event_type_column])
+#         # only add to dictionaries if is add event 0
+#         if evt == 0 and row[machine_id_column].strip() != "":
+#             machine_ram_dict[long(row[machine_id_column])] = float(row[machine_ram_column])
+#             machine_cpu_dict[long(row[machine_id_column])] = float(row[machine_cpu_column])
+
 
 with open(job_events_file_path, 'rb') as csvfile:
     jobsreader = csv.reader(csvfile)
@@ -114,14 +139,23 @@ with open(task_events_file_path, 'rb') as taskscsvfile:
     tasksreader = csv.reader(taskscsvfile)
     for task_row in tasksreader:
         job_id = int(task_row[task_job_id_column])
+        # machine_id = None
+        # if task_row[task_machine_id_column] != "" :
+        #     machine_id = long(task_row[task_machine_id_column])
         event_type = int(task_row[task_event_type_column])
         requested_cpu = float(0)
         requested_memory = float(0)
+
         if task_row[task_requested_cpu_column] and not task_row[task_requested_cpu_column].isspace():
             requested_cpu = float(task_row[task_requested_cpu_column])
         if task_row[task_requested_memory_column] and not task_row[task_requested_memory_column].isspace():
             requested_memory = float(task_row[task_requested_memory_column])
+
         if event_type == 0:
+            # if machine_id in machine_cpu_dict:
+            #     requested_cpu = requested_cpu * machine_cpu_dict[machine_id]
+            # if machine_id in machine_ram_dict:
+            #     requested_memory = requested_memory * machine_ram_dict[machine_id]
             prefill_dict[job_id].aggregated_cpu += requested_cpu
             prefill_dict[job_id].aggregated_memory += requested_memory
             prefill_dict[job_id].task_number += 1
@@ -186,7 +220,7 @@ for key, print_job in ordered_jobs.items():
         job_row.append(print_job.scheduling_class)
         job_row.append(print_job.task_number)
         job_row.append(print_job.aggregated_cpu)  # num cores
-        job_row.append(print_job.aggregated_memory * 1024 * 1024 * 1024 * machine_ram)
+        job_row.append(print_job.aggregated_memory) # supposed to be GB RAM
         all_writer.writerow(job_row)
         if not print_job.submit_timestamp > float(0):
             prefill_writer.writerow(job_row)
@@ -200,9 +234,6 @@ for key, print_job in ordered_jobs.items():
             all_writer.writerow(finish_job_row)
             if not print_job.submit_timestamp > float(0):
                 prefill_writer.writerow(finish_job_row)
-        # conversion to byte and multiply by RAM
-        # we assume that machines have 1gb ram, we should multiply by some reasonable value (4-8gb)
-        # because google does not show the RAM of their machines
 
     # job distribution traces
 
