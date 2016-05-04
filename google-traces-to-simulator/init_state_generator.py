@@ -49,6 +49,7 @@ for x in range(0, 1000):
         init_row.append(num_cpu_job)
         init_row.append(num_mem_job*1024*1024*1024)
         init_state.writerow(init_row)
+init_state_file.close()
 
 
 
