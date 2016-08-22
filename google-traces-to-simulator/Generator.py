@@ -160,7 +160,7 @@ with open(task_events_file_path, 'rb') as taskscsvfile:
             #     if machine_id in machine_ram_dict:
             #         requested_memory = requested_memory * machine_ram_dict[machine_id]
             prefill_dict[job_id].aggregated_cpu += requested_cpu * machine_cores
-            prefill_dict[job_id].aggregated_memory += requested_memory * machine_ram
+            prefill_dict[job_id].aggregated_memory += requested_memory * machine_ram * 1024 * 1024 * 1024
             prefill_dict[job_id].task_number += 1
 
 
